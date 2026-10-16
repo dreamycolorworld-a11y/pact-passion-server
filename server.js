@@ -1,4 +1,4 @@
-const express = require('express');
+<selection-tag>const express = require('express');
 const TelegramBot = require('node-telegram-bot-api');
 
 const app = express();
@@ -41,3 +41,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Сервер запущено на порту ${PORT}`);
 });
+</selection-tag>
