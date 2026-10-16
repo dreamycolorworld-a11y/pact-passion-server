@@ -42,3 +42,9 @@ app.post('/api/support', async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+
+// Обязательный блок запуска сервера, чтобы приложение не выключалось!
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Сервер запущено на порту ${PORT}`);
+});
