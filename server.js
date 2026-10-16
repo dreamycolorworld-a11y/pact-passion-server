@@ -26,7 +26,7 @@ app.post('/api/support', async (req, res) => {
       return res.status(500).json({ success: false, error: 'Telegram токен или Chat ID не настроены на сервере' });
     }
 
-    const text = `📨 *Нове звернення в підтримку*\n\n📂 Категорія: ${category || 'Техпіддержка'}\n💬 Повідомлення: ${message}`;
+    const text = `📨 *Нове звернення в підтримку*\n\n💬 Повідомлення: ${message}`;
     await bot.sendMessage(TELEGRAM_CHAT_ID, text, { parse_mode: 'Markdown' });
 
     res.json({ success: true });
