@@ -1,8 +1,16 @@
+const express = require('express');
 const TelegramBot = require('node-telegram-bot-api');
-const token = process.env.TELEGRAM_BOT_TOKEN;
-const chatId = process.env.d:AAF7bfhLoDfyzUtGzpVmTX9XnhUI2BX-X3A;
-const bot = new TelegramBot(token, { polling: false });
 
+const app = express();
+app.use(express.json());
+
+// Ваши данные, интегрированные в код сервера:
+const TELEGRAM_BOT_TOKEN = '8987490001:AAF7bfhLoDfyzUtGzpVmTX9XnhUI2BX-X3A';
+const TELEGRAM_CHAT_ID = '5164681538';
+
+const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: false });
+
+// Обработчик запросов из игры (чат техподдержки)
 app.post('/api/support', async (req, res) => {
   try {
     const { message, category } = req.body;
@@ -10,15 +18,20 @@ app.post('/api/support', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Пустое сообщение' });
     }
 
-    // Формируем текст для вас в Telegram
-    const text = `📨 *Новое обращение в поддержку*\n\n📂 Категория: ${category}\n💬 Текст: ${message}`;
+    // Формируем красивое уведомление для вас в Telegram
+    const text = `📨 *Нове звернення в підтримку*\n\n📂 Категорія: ${category || 'Техпіддержка'}\n💬 Повідомлення: ${message}`;
 
-    // Отправляем вам в личные сообщения
-    await bot.sendMessage(chatId, text, { parse_mode: 'Markdown' });
+    // Отправляем в ваш личный чат Telegram
+    await bot.sendMessage(TELEGRAM_CHAT_ID, text, { parse_mode: 'Markdown' });
 
     res.json({ success: true });
   } catch (err) {
-    console.error('Ошибка отправки в Telegram:', err);
+    console.error('Помилка відправки в Telegram:', err);
     res.status(500).json({ success: false, error: err.message });
   }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Сервер технічної підтримки запущено на порту ${PORT}`);
 });
