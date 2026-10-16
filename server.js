@@ -3,9 +3,8 @@ const TelegramBot = require('node-telegram-bot-api');
 
 const app = express();
 app.use(express.json());
-
-const TELEGRAM_BOT_TOKEN = '8987490001:AAF7bfhLoDfyzUtGzpVmTX9XnhUI2BX-X3A';
-const TELEGRAM_CHAT_ID = '5164681538';
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 // Инициализация через конструктор по умолчанию
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: false });
