@@ -1,4 +1,4 @@
-<selection-tag>const express = require('express');
+const express = require('express');
 const TelegramBot = require('node-telegram-bot-api');
 
 const app = express();
@@ -7,14 +7,13 @@ app.use(express.json());
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
-// Проверяем токен прямо при старте сервера
 if (!TELEGRAM_BOT_TOKEN) {
   console.error("❌ КРИТИЧЕСКАЯ ОШИБКА: Переменная TELEGRAM_BOT_TOKEN не задана на сервере!");
 } else {
   console.log("✅ Токен Telegram успешно обнаружен!");
 }
 
-const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: false });
+const bot = new TelegramBot(TELEGRAM_BOT_TOKEN || "DUMMY_TOKEN", { polling: false });
 
 app.post('/api/support', async (req, res) => {
   try {
@@ -41,4 +40,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Сервер запущено на порту ${PORT}`);
 });
-</selection-tag>
