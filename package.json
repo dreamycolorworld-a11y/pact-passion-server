@@ -1,0 +1,14 @@
+{
+  "name": "pact-server",
+  "version": "1.0.0",
+  "description": "Сервер техподдержки для Telegram Mini App",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "node-telegram-bot-api": "^2.1.0"
+  }
+}
