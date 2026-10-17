@@ -22,36 +22,30 @@ const bot = new TelegramBot(TELEGRAM_BOT_TOKEN || "DUMMY_TOKEN", { polling: true
 // (В продакшене лучше использовать БД, но для начала сойдет и память сервера)
 const activeChats = new Map();
 
-app.post('/api/support', async (req, res) => {
-  try {
+app.post('/api/support', (req, res) => {
     const { message, category, user } = req.body;
-    if (!message) {
-      return res.status(400).json({ success: false, error: 'Пустое сообщение' });
-    }
 
-    const userName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || 'Гість';
-    const userHandle = user?.username || 'немає';
-    const userId = user?.id || 'невідомо';
+    // Безопасно извлекаем данные, которые прислал фронтенд
+    const userId = user?.id || 'Невідомо';
+    const firstName = user?.firstName || 'Гість';
+    const username = user?.username || 'немає';
 
-    const text = `📨 *Нове звернення в підтримку*\n\n` +
-                 `📂 *Категорія:* ${category || 'Техпіддержка'}\n` +
-                 `👤 *Гравець:* ${userName} (${userHandle})\n` +
-                 `🆔 *ID користувача:* \`${userId}\`\n\n` +
-                 `💬 *Повідомлення:*\n${message}`;
+    // Формируем текст для вашего Telegram-чата
+    const notificationText = `📩 **Нове повідомлення підтримки!**\n\n` +
+                           `👤 **Користувач:** ${firstName} (${username})\n` +
+                           `🆔 **ID:** \`${userId}\`\n` +
+                           `📂 **Категорія:** ${category}\n\n` +
+                           `💬 **Повідомлення:**\n${message}`;
 
-    // Отправляем сообщение в чат поддержки (вам)
-    const sentMsg = await bot.sendMessage(TELEGRAM_CHAT_ID, text, { parse_mode: 'Markdown' });
-
-    // Сохраняем привязку ID отправленного сообщения к ID игрока
-    if (userId && userId !== 'невідомо') {
-      activeChats.set(sentMsg.message_id, userId);
-    }
-
-    res.json({ success: true });
-  } catch (err) {
-    console.error('Помилка відправки в Telegram:', err);
-    res.status(500).json({ success: false, error: err.message });
-  }
+    // Отправляем вам в Telegram
+    bot.sendMessage(YOUR_ADMIN_CHAT_ID, notificationText, { parse_mode: 'Markdown' })
+      .then(() => {
+          res.json({ success: true });
+      })
+      .catch(err => {
+          console.error("Помилка надсилання в телеграм:", err);
+          res.status(500).json({ success: false, error: err.message });
+      });
 });
 
 // Слушаем входящие сообщения от вас в Telegram-боте
