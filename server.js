@@ -23,21 +23,31 @@ const bot = new TelegramBot(TELEGRAM_BOT_TOKEN || "DUMMY_TOKEN", { polling: true
 const activeChats = new Map();
 
 app.post('/api/support', (req, res) => {
-    const { message, category, user } = req.body;
+    // Выведем в консоль Render то, что реально пришло от игры, чтобы мы видели картину
+    console.log("Отримано дані від гри:", req.body);
 
-    // Безопасно извлекаем данные, которые прислал фронтенд
-    const userId = user?.id || 'Невідомо';
-    const firstName = user?.firstName || 'Гість';
-    const username = user?.username || 'немає';
+    const message = req.body.message || "Без повідомлення";
+    const category = req.body.category || "Підтримка";
+    
+    // Беремо об'єкт користувача звідки завгодно (з req.body.user або напряму з req.body)
+    const user = req.body.user || req.body;
 
-    // Формируем текст для вашего Telegram-чата
+    // Шукаємо ID у всіх можливих варіантах
+    const userId = user.id || user.telegramId || user.userId || 'Невідомо';
+    
+    // Шукаємо ім'я (підтримуємо і firstName, і first_name)
+    const firstName = user.firstName || user.first_name || user.name || 'Гість';
+    
+    // Шукаємо юзернейм
+    const username = user.username ? (user.username.startsWith('@') ? user.username : `@${user.username}`) : 'немає';
+
+    // Формуємо текст для вас у Telegram
     const notificationText = `📩 **Нове повідомлення підтримки!**\n\n` +
                            `👤 **Користувач:** ${firstName} (${username})\n` +
                            `🆔 **ID:** \`${userId}\`\n` +
                            `📂 **Категорія:** ${category}\n\n` +
                            `💬 **Повідомлення:**\n${message}`;
 
-    // Отправляем вам в Telegram
     bot.sendMessage(YOUR_ADMIN_CHAT_ID, notificationText, { parse_mode: 'Markdown' })
       .then(() => {
           res.json({ success: true });
@@ -47,7 +57,6 @@ app.post('/api/support', (req, res) => {
           res.status(500).json({ success: false, error: err.message });
       });
 });
-
 // Слушаем входящие сообщения от вас в Telegram-боте
 bot.on('message', async (msg) => {
   try {
